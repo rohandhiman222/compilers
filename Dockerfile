@@ -22,14 +22,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # GCC
-ENV GCC_VERSIONS="9.4.0 10.3.0"
-RUN for V in $GCC_VERSIONS; do \
-      curl -fsSL https://ftpmirror.gnu.org/gcc/gcc-$V/gcc-$V.tar.gz | tar zx && \
-      cd gcc-$V && ./contrib/download_prerequisites && mkdir build && cd build && \
-      ../configure --disable-multilib --enable-languages=c,c++ --prefix=/opt/gcc/$V && \
-      make -j$(nproc) && make install-strip && \
-      cd / && rm -rf gcc-$V*; \
-    done
+
 
 # Python
 ENV PYTHON_VERSIONS="3.11.4 2.7.18"
