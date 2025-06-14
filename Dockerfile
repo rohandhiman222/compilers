@@ -31,31 +31,42 @@ RUN mkdir -p /etc/apt/keyrings && \
 # Verify Node.js and npm versions
 RUN node -v && npm -v
 
-# --- Install Latest Python (3.12.x) ---
-# Add the deadsnakes PPA which provides up-to-date Python versions for Ubuntu.
+# --- Install Latest Python (3.12.x) from Source ---
+# This is the recommended method for Debian-based images where the desired Python version is not in the default repos.
 RUN apt-get update && \
-    # software-properties-common is needed for add-apt-repository
-    apt-get install -y --no-install-recommends software-properties-common && \
-    # Add -y flag to automatically accept the PPA addition
-    add-apt-repository -y ppa:deadsnakes/ppa && \
-    # Update apt again to fetch packages from the new PPA
-    apt-get update && \
-    # Install Python 3.12 and its development/venv packages
+    # Install build dependencies for Python
     apt-get install -y --no-install-recommends \
-    python3.12 \
-    python3.12-venv \
-    python3.12-dev \
-    python3-pip && \
-    # Clean up apt cache
+        build-essential \
+        zlib1g-dev \
+        libncurses5-dev \
+        libgdbm-dev \
+        libnss3-dev \
+        libssl-dev \
+        libreadline-dev \
+        libffi-dev \
+        libsqlite3-dev \
+        wget \
+        libbz2-dev && \
+    # Download Python source
+    wget https://www.python.org/ftp/python/3.12.4/Python-3.12.4.tgz -O /tmp/Python-3.12.4.tgz && \
+    tar -xzf /tmp/Python-3.12.4.tgz -C /usr/src && \
+    cd /usr/src/Python-3.12.4 && \
+    # Configure, compile, and install Python
+    ./configure --enable-optimizations && \
+    make -j$(nproc) && \
+    # Use altinstall to avoid overwriting the default python3
+    make altinstall && \
+    # Clean up build dependencies and source files
+    apt-get purge -y --auto-remove build-essential && \
+    rm -rf /usr/src/Python-3.12.4 /tmp/Python-3.12.4.tgz && \
     rm -rf /var/lib/apt/lists/*
 
 # Set Python 3.12 as the default python3 using update-alternatives.
-# This helps ensure Judge0 uses this version if it calls 'python3'.
-# Priority 1 is a low priority; adjust if other python3 versions might exist.
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+# Using python3.12 from /usr/local/bin where 'make altinstall' places it.
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.12 1
 
 # Verify Python version (should be 3.12.x) and pip3 version
-RUN python3 --version && pip3 --version
+RUN python3 --version && python3 -m pip --version
 
 # --- Install Latest Java (OpenJDK 24.0.1) ---
 # Define arguments for Java version and download URL.
