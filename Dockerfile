@@ -72,9 +72,8 @@ RUN python3 --version && python3 -m pip --version
 # Define arguments for Java version and download URL.
 ARG JAVA_VERSION=24.0.1
 ARG JDK_FILENAME=openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz
-# IMPORTANT: The JDK_URL must be verified for the latest specific build.
-# This URL is for OpenJDK 24.0.1 from jdk.java.net (GPL license, no-fee terms).
-ARG JDK_URL=https://download.java.net/java/GA/jdk${JAVA_VERSION}/8f9801659a8449579b18d2709794882c/36/GPL/${JDK_FILENAME}
+# UPDATED: The previous JDK_URL was invalid. This is a corrected, stable URL.
+ARG JDK_URL=https://download.java.net/java/GA/jdk24.0.1/2d3816a1b24446349646aeda4168979e/36/GPL/openjdk-24.0.1_linux-x64_bin.tar.gz
 
 # Download, extract, and clean up the OpenJDK tarball.
 RUN curl -L -o /tmp/${JDK_FILENAME} ${JDK_URL} && \
