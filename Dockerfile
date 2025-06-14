@@ -32,13 +32,19 @@ RUN mkdir -p /etc/apt/keyrings && \
 RUN node -v && npm -v
 
 # --- Install Latest Python (3.12.x) ---
-# Install Python 3.12 and its development headers/libraries.
-# This assumes the base image is Debian/Ubuntu-based and Python 3.12 is available via apt.
+# Add the deadsnakes PPA which provides up-to-date Python versions for Ubuntu.
 RUN apt-get update && \
+    # software-properties-common is needed for add-apt-repository
+    apt-get install -y --no-install-recommends software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    # Update apt again to fetch packages from the new PPA
+    apt-get update && \
+    # Install Python 3.12 and its development/venv packages
     apt-get install -y --no-install-recommends \
     python3.12 \
     python3.12-venv \
-    python3.12-dev && \
+    python3.12-dev \
+    python3-pip && \
     # Clean up apt cache
     rm -rf /var/lib/apt/lists/*
 
