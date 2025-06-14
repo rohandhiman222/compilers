@@ -36,7 +36,8 @@ RUN node -v && npm -v
 RUN apt-get update && \
     # software-properties-common is needed for add-apt-repository
     apt-get install -y --no-install-recommends software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
+    # Add -y flag to automatically accept the PPA addition
+    add-apt-repository -y ppa:deadsnakes/ppa && \
     # Update apt again to fetch packages from the new PPA
     apt-get update && \
     # Install Python 3.12 and its development/venv packages
