@@ -31,23 +31,23 @@ RUN mkdir -p /etc/apt/keyrings && \
 # Verify Node.js and npm versions
 RUN node -v && npm -v
 
-# --- Install Latest Python (3.13.5) ---
-# Install Python 3.13 and its development headers/libraries.
-# This assumes the base image is Debian/Ubuntu-based and Python 3.13 is available via apt.
+# --- Install Latest Python (3.12.x) ---
+# Install Python 3.12 and its development headers/libraries.
+# This assumes the base image is Debian/Ubuntu-based and Python 3.12 is available via apt.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    python3.13 \
-    python3.13-venv \
-    python3.13-dev && \
+    python3.12 \
+    python3.12-venv \
+    python3.12-dev && \
     # Clean up apt cache
     rm -rf /var/lib/apt/lists/*
 
-# Set Python 3.13 as the default python3 using update-alternatives.
+# Set Python 3.12 as the default python3 using update-alternatives.
 # This helps ensure Judge0 uses this version if it calls 'python3'.
 # Priority 1 is a low priority; adjust if other python3 versions might exist.
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 
-# Verify Python version (should be 3.13.x) and pip3 version
+# Verify Python version (should be 3.12.x) and pip3 version
 RUN python3 --version && pip3 --version
 
 # --- Install Latest Java (OpenJDK 24.0.1) ---
